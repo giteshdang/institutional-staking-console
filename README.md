@@ -183,4 +183,4 @@ Verified results:
 
 ## Time spent
 
-Approximately 1.5 hours of active implementation and validation was spent on backend endpoints, synchronization, tests, frontend wiring and shared states, local runtime setup, browser verification, and documentation. Production infrastructure and real chain integrations would require additional time.
+Approximately 2 hours of active implementation and validation was spent on backend endpoints, synchronization, tests, frontend wiring and shared states, local runtime setup, browser verification, and documentation. Production infrastructure and real chain integrations would require additional time.
