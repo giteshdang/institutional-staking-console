@@ -1,5 +1,6 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { apiGet } from "../api";
+import { EmptyState, ErrorState, LoadingState } from "../components/AsyncState";
 
 type RewardsResponse = {
   data: Array<{
@@ -17,8 +18,7 @@ export default function RewardsPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
+  async function loadRewards() {
     setLoading(true);
     setError(null);
     const params = new URLSearchParams();
@@ -33,6 +33,17 @@ export default function RewardsPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  useEffect(() => {
+    loadRewards();
+    // Initial load intentionally uses the default empty filters.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    void loadRewards();
   }
 
   return (
@@ -59,8 +70,9 @@ export default function RewardsPage() {
           {loading ? "Loading…" : "Apply"}
         </button>
       </form>
-      {error && <p className="error">{error}</p>}
-      {!error && !rows.length && <p>No rows. Implement rewards API, then filter.</p>}
+      {loading && <LoadingState message="Loading rewards…" />}
+      {error && <ErrorState message={error} />}
+      {!loading && !error && !rows.length && <EmptyState message="No rewards match these filters." />}
       {!!rows.length && (
         <table>
           <thead>

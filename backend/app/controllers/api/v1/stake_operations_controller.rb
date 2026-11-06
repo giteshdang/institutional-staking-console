@@ -11,13 +11,14 @@ module Api
       end
 
       def create
-        network = Network.find_by(slug: params.require(:network))
+        payload = request.request_parameters
+        network = Network.find_by(slug: payload["network"])
         return render json: { error: "unknown_network" }, status: :unprocessable_entity unless network
 
         op = current_organization.stake_operations.new(
           network: network,
-          action: params.require(:action),
-          amount: params.require(:amount).to_s,
+          action: payload["action"],
+          amount: payload["amount"].to_s,
           status: "pending"
         )
 
@@ -25,9 +26,16 @@ module Api
           return render json: { error: "validation_failed", details: op.errors.full_messages }, status: :unprocessable_entity
         end
 
-        # TODO(candidate): persist, call ChainClients::MockChainClient#submit_stake,
-        # set external_id + status=submitted (or enqueue confirmation job)
-        render json: { error: "not_implemented", hint: "Wire ChainClient submit + persist operation" }, status: :not_implemented
+        op.save!
+        result = ChainClients::MockChainClient.new.submit_stake(op)
+        op.update!(external_id: result.fetch(:external_id), status: result.fetch(:status))
+
+        render json: { data: serialize(op) }, status: :created
+      rescue StandardError => e
+        if defined?(op) && op&.persisted?
+          op.update_columns(status: "failed", error_message: e.message, updated_at: Time.current)
+        end
+        raise
       end
 
       private

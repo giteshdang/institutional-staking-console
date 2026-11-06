@@ -1,10 +1,12 @@
 # Frontend (React + TypeScript)
 
-See root `README.md` for **Your job**.
+See the root `README.md` for complete setup, API behavior, and implementation assumptions.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Defaults to proxying `/api` to `http://localhost:3000` and API key `demo-key`.
+Copy `.env.example` to `.env.local` to configure the API base and key. Local development proxies `/api` to `http://127.0.0.1:3000` and defaults to API key `demo-key`.
+
+Run `npm run build` for TypeScript and production-build verification.

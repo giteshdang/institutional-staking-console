@@ -9,5 +9,8 @@ class StakeOperation < ApplicationRecord
 
   validates :action, inclusion: { in: ACTIONS }
   validates :status, inclusion: { in: STATUSES }
-  validates :amount, presence: true
+  validates :amount, presence: true, format: {
+    with: /\A[1-9]\d*\z/,
+    message: "must be a positive integer string"
+  }
 end

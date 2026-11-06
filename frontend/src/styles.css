@@ -82,6 +82,52 @@ button {
   color: #a33;
 }
 
+.state {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 1rem 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid #dce2e8;
+  border-radius: 6px;
+  background: white;
+}
+
+.state p {
+  margin: 0;
+}
+
+.state-error {
+  display: block;
+  color: #8a2424;
+  border-color: #efb6b6;
+  background: #fff4f4;
+}
+
+.state-error p {
+  margin-top: 0.25rem;
+}
+
+.state-empty {
+  color: #5f6976;
+  border-style: dashed;
+}
+
+.spinner {
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 2px solid #b9cfdb;
+  border-top-color: #1e648c;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .muted {
   color: #5f6976;
 }

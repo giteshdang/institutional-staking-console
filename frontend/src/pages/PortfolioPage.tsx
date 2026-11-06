@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { apiGet } from "../api";
+import { EmptyState, ErrorState, LoadingState } from "../components/AsyncState";
 
 type PortfolioResponse = {
   data: Array<{
@@ -24,9 +25,9 @@ export default function PortfolioPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p>Loading portfolio…</p>;
-  if (error) return <p className="error">{error}</p>;
-  if (!data?.data?.length) return <p>No portfolio rows yet. Implement API + sync.</p>;
+  if (loading) return <LoadingState message="Loading portfolio…" />;
+  if (error) return <ErrorState message={error} />;
+  if (!data?.data?.length) return <EmptyState message="No portfolio balances are available." />;
 
   return (
     <section>

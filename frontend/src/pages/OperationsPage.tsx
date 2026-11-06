@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { apiGet, apiPost } from "../api";
+import { EmptyState, ErrorState, LoadingState } from "../components/AsyncState";
 
 type Operation = {
   id: number;
@@ -18,6 +19,7 @@ export default function OperationsPage() {
   const [amount, setAmount] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   async function refresh() {
     const res = await apiGet<{ data: Operation[] }>("/api/v1/stake_operations");
@@ -25,7 +27,9 @@ export default function OperationsPage() {
   }
 
   useEffect(() => {
-    refresh().catch((e) => setError(String(e)));
+    refresh()
+      .catch((e) => setError(String(e)))
+      .finally(() => setInitialLoading(false));
   }, []);
 
   async function onSubmit(e: FormEvent) {
@@ -33,7 +37,6 @@ export default function OperationsPage() {
     setLoading(true);
     setError(null);
     try {
-      // TODO(candidate): ensure backend create is implemented
       await apiPost("/api/v1/stake_operations", { network, action, amount });
       await refresh();
       setAmount("");
@@ -70,8 +73,10 @@ export default function OperationsPage() {
           {loading ? "Submitting…" : "Create"}
         </button>
       </form>
-      {error && <p className="error">{error}</p>}
-      <table>
+      {error && <ErrorState message={error} />}
+      {initialLoading && <LoadingState message="Loading operations…" />}
+      {!initialLoading && !error && !ops.length && <EmptyState message="No stake operations yet." />}
+      {!!ops.length && <table>
         <thead>
           <tr>
             <th>Created</th>
@@ -96,7 +101,7 @@ export default function OperationsPage() {
             </tr>
           ))}
         </tbody>
-      </table>
+      </table>}
     </section>
   );
 }
